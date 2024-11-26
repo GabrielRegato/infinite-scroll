@@ -1,50 +1,121 @@
-# React + TypeScript + Vite
+# Infinite Scroll  - Vite + React + Typescript + TailwindCSS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
 
-Currently, two official plugins are available:
+This project is a React application built with Vite, TypeScript, and TailwindCSS. It implements infinite scrolling to display data fetched from two different URLs.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Node.js (version 14 or higher)
+- npm (version 6 or higher)
 
-- Configure the top-level `parserOptions` property like this:
+### Installation
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. Clone the repository: `git clone https://github.com/GabrielRegato/infinite-scroll.git`
+2. Navigate to the project directory:
+```bash
+cd infinite-scroll
+```
+3. Install dependencies: `npm install`
+```bash
+npm install
+```
+4. Run the application: `npm run dev`
+```bash
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Development Server
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Run `npm run dev` to start the development server. 
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+Navigate to `http://localhost:5173/` to access the app.
+
+### Build and Deployment
+
+To build the application for production, run the following command:
+
+```bash
+npm run build
+```
+
+This command generates an optimized production build of your app in the dist folder. Vite bundles your React application efficiently, ensuring that it runs in production mode with optimal performance.
+
+## How to Use
+
+### Basic Usage
+
+This example demonstrates the basic setup for using Infinite Scroll in a React component.
+
+```javascript
+import React, { useState, useEffect } from "react";
+import InfiniteScroll from "./InfiniteScroll";
+import { useCustomizedDataHook } from "./hooks/useCustomizedDataHook";
+import Item from "./Item";
+import LoadingSkeleton from "./LoadingSkeleton";
+
+const MyComponent: React.FC = () => {
+  const [page, setPage] = useState(1);
+  const [facts, setFacts] = useState<string[]>([]);
+  const { data, isLoading, isError } = useCustomizedDataHook(page);
+
+  const loadMore = () => {
+    if (data && page < data.last_page) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (data?.records) {
+      setFacts((prev) => [...prev, ...data.records]);
+    }
+  }, [data]);
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (isError) return <div>Error fetching data.</div>;
+
+  return (
+    <InfiniteScroll loadMore={loadMore} hasMore={page < data.last_page}>
+      <div>
+        {data.map((record, index) => (
+          <Item key={index} data={record} />
+        ))}
+      </div>
+    </InfiniteScroll>
+  );
+};
+
+export default MyComponent;
+```
+
+
+
+## Features
+
+- Infinite scrolling functionality to load more data as the user scrolls down.
+- Fetches and displays data from two different APIs.
+- Built with modern web technologies for optimal performance.
+
+## Technologies Used
+
+- **Vite**: A fast build tool for modern web projects.
+- **React**: A JavaScript library for building user interfaces.
+- **TypeScript**: A superset of JavaScript that adds static types.
+- **TailwindCSS**: A utility-first CSS framework for styling.
+
+
+## Disclaimer
+
+This repository is provided "as is" and without warranty of any kind. Use it at your own risk. While we hope this repository serves as a helpful starting point for implementing infinite scroll functionality in your React applications, you are responsible for modifying and adapting the code to meet your specific requirements.
+
+You may enhance, modify, or change the Infinite Scroll component, data-fetching logic, and related templates as necessary. However, please be aware that we do not guarantee the accuracy, completeness, or reliability of the code provided. It is your responsibility to ensure that the implementation meets your needs and adheres to best practices.
+
+By using this repository, you acknowledge that you understand these terms and agree to assume all risks associated with its use.
+
+Infinite Scroll - Gabriel A.R.
